@@ -81,31 +81,32 @@ MapNextFamily('q', 'c', 'cc')
 MapNextFamily('t', 't', 'trewind')
 
 def Entries(path: string): list<string>
-  var tpath = substitute(a:path,'[\\/]$','','')
+  var tpath = substitute(path, '[\\/]$', '', '')
   tpath = substitute(tpath, '[[$*]', '[&]', 'g')
-  var files = split(glob(path."/.*"),"\n")
-  files += split(glob(path."/*"),"\n")
-  map(files,'substitute(v:val, "[\\/]$","","")')
-  filter(files,'v:val !~# "[\\\\/]\\.\\.\\=$"')
+  var files = split(glob(path .. "/.*"), "\n")
+  files += split(glob(path .. "/*"), "\n")
+  map(files, 'substitute(v:val, "[\\/]$", "", "")')
+  filter(files, 'v:val !~# "[\\\\/]\\.\\.\\=$"')
 
   var filter_suffixes = substitute(escape(&suffixes, '~.*$^'), ',', '$\\|', 'g') .. '$'
-  filter(files, 'v:val !~# filter_suffixes')
+  # filter(files, 'v:val !~# filter_suffixes')
+  filter(files, (_, v) => v !~# filter_suffixes)
 
   return sort(files)
 enddef
 
 def FileByOffset(num: number): string
-  let file = expand('%:p')
+  var file = expand('%:p')
   if empty(file)
-    let file = getcwd() .. '/'
+    file = getcwd() .. '/'
   endif
-  var tnum = a:num
-  while tnum
-    var files = entries(fnamemodify(file, ':h'))
+  var tnum = num
+  while tnum != 0
+    var files = Entries(fnamemodify(file, ':h'))
     if num < 0
-      reverse(filter(files, 'v:val <# file'))
+      reverse(filter(files, (_, v) => v <# file))
     else
-      filter(files, 'v:val ># file')
+      filter(files, (_, v) => v ># file)
     endif
     var temp = get(files, 0, '')
     if empty(temp)
@@ -114,7 +115,7 @@ def FileByOffset(num: number): string
       file = temp
       var found = 1
       while isdirectory(file)
-        files = entries(file)
+        files = Entries(file)
         if empty(files)
           found = 0
           break
@@ -156,21 +157,22 @@ def PreviousFileEntry(count: number): string
 enddef
 
 def NextFileEntry(count: number): string
-  let window = GetWindow()
+  var window = GetWindow()
 
   if get(window, 'loclist')
     return 'lnewer ' .. count
   elseif get(window, 'quickfix')
     return 'cnewer ' .. count
   else
+	var command = 'edit ' .. fnameescape(fnamemodify(FileByOffset(v:count1), ':.'))
     return 'edit ' .. fnameescape(fnamemodify(FileByOffset(v:count1), ':.'))
   endif
 enddef
 
-nnoremap <silent> <Plug>(unimpaired-directory-next)     :<C-U><ScriptCmd>NextFileEntry(v:count1)<CR>
-nnoremap <silent> <Plug>(unimpaired-directory-previous) :<C-U><ScriptCmd>PreviousFileEntry(v:count1)<CR>
-nnoremap <silent> <Plug>unimpairedDirectoryNext     :<C-U><ScriptCmd>NextFileEntry(v:count1)<CR>
-nnoremap <silent> <Plug>unimpairedDirectoryPrevious :<C-U><ScriptCmd>PreviousFileEntry(v:count1)<CR>
+nnoremap <silent> <Plug>(unimpaired-directory-next)     :<C-U>execute <SID>NextFileEntry(v:count1)<CR>
+nnoremap <silent> <Plug>(unimpaired-directory-previous) :<C-U>execute <SID>PreviousFileEntry(v:count1)<CR>
+nnoremap <silent> <Plug>unimpairedDirectoryNext     :<C-U>execute <SID>NextFileEntry(v:count1)<CR>
+nnoremap <silent> <Plug>unimpairedDirectoryPrevious :<C-U>execute <SID>PreviousFileEntry(v:count1)<CR>
 execute Map('n', ']f', '<Plug>(unimpaired-directory-next)')
 execute Map('n', '[f', '<Plug>(unimpaired-directory-previous)')
 
@@ -202,7 +204,7 @@ def Context(reverse: bool): number
 enddef
 
 def ContextMotion(reverse: bool): void
-  if a:reverse
+  if reverse
     -
   endif
   search('^@@ .* @@\|^diff \|^[<=>|]\{7}[<=>|]\@!', 'bWc')
