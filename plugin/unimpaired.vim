@@ -237,26 +237,26 @@ enddef
 # Section: Line operations
 
 def BlankUp(): string
-  var cmd = 'put!=repeat(nr2char(10), v:count1)|silent '']+'
+  var cmd = $'put!=repeat(nr2char(10), {v:count1})|silent '']+'
   if &modifiable
-    cmd .= '|silent! call repeat#set("\<Plug>(unimpaired-blank-up)", v:count1)'
+    cmd = cmd .. $'|silent! call repeat#set("\<Plug>(unimpaired-blank-up)", {v:count1})'
   endif
   return cmd
 enddef
 
 def BlankDown(): string
-  var cmd = 'put =repeat(nr2char(10), v:count1)|silent ''[-'
+  var cmd = $'put =repeat(nr2char(10), {v:count1})|silent ''[-'
   if &modifiable
-    cmd .= '|silent! call repeat#set("\<Plug>(unimpaired-blank-down)", v:count1)'
+    cmd = cmd .. $'|silent! call repeat#set("\<Plug>(unimpaired-blank-down)", {v:count1})'
   endif
   return cmd
 enddef
 
-nnoremap <silent> <Plug>(unimpaired-blank-up)   :<C-U><ScriptCmd>BlankUp()<CR>
-nnoremap <silent> <Plug>(unimpaired-blank-down) :<C-U><ScriptCmd>BlankDown()<CR>
+nnoremap <silent> <Plug>(unimpaired-blank-up)   :<C-U>execute <SID>BlankUp()<CR>
+nnoremap <silent> <Plug>(unimpaired-blank-down) :<C-U>execute <SID>BlankDown()<CR>
 
-nnoremap <silent> <Plug>unimpairedBlankUp   :<C-U><ScriptCmd>BlankUp()<CR>
-nnoremap <silent> <Plug>unimpairedBlankDown :<C-U><ScriptCmd>BlankDown()<CR>
+nnoremap <silent> <Plug>unimpairedBlankUp   :<C-U>execute <SID>BlankUp()<CR>
+nnoremap <silent> <Plug>unimpairedBlankDown :<C-U>execute <SID>BlankDown()<CR>
 
 execute Map('n', '[<Space>', '<Plug>(unimpaired-blank-up)')
 execute Map('n', ']<Space>', '<Plug>(unimpaired-blank-down)')
