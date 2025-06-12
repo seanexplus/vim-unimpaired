@@ -53,24 +53,24 @@ def MapNextFamily(map: string, cmd: string, current: string): void
   execute 'nnoremap <silent> ' .. tmap .. 'Next     :<C-U>exe "' .. tcmd .. 'next' .. end
   execute 'nnoremap <silent> ' .. tmap .. 'First    :<C-U>exe "' .. tcmd .. 'first' .. end
   execute 'nnoremap <silent> ' .. tmap .. 'Last     :<C-U>exe "' .. tcmd .. 'last' .. end
-  Map('n', '[' .. map, prefix .. 'previous)')
-  Map('n', ']' .. map, prefix .. 'next)')
-  Map('n', '[' .. toupper(map), prefix .. 'first)')
-  Map('n', ']' .. toupper(map), prefix .. 'last)')
+  execute Map('n', '[' .. map, prefix .. 'previous)')
+  execute Map('n', ']' .. map, prefix .. 'next)')
+  execute Map('n', '[' .. toupper(map), prefix .. 'first)')
+  execute Map('n', ']' .. toupper(map), prefix .. 'last)')
   if cmd ==# 'c' || cmd ==# 'l'
     execute 'nnoremap <silent> ' .. prefix .. 'pfile)  :<C-U>exe "' .. tcmd .. 'pfile' .. end
     execute 'nnoremap <silent> ' .. prefix .. 'nfile)  :<C-U>exe "' .. tcmd .. 'nfile' .. end
     execute 'nnoremap <silent> ' .. tmap .. 'PFile :<C-U>exe "' .. tcmd .. 'pfile' .. end
     execute 'nnoremap <silent> ' .. tmap .. 'NFile :<C-U>exe "' .. tcmd .. 'nfile' .. end
-    Map('n', '[<C-' .. toupper(map) .. '>', prefix .. 'pfile)')
-    Map('n', ']<C-' .. toupper(map) .. '>', prefix .. 'nfile)')
+    execute Map('n', '[<C-' .. toupper(map) .. '>', prefix .. 'pfile)')
+    execute Map('n', ']<C-' .. toupper(map) .. '>', prefix .. 'nfile)')
   elseif cmd ==# 't'
     nnoremap <silent> <Plug>(unimpaired-ptprevious) :<C-U>execute v:count1 .. "ptprevious"<CR>
     nnoremap <silent> <Plug>(unimpaired-ptnext) :<C-U>execute v:count1 .. "ptnext"<CR>
     execute 'nnoremap <silent> ' .. map .. 'PPrevious :<C-U>exe "p' .. tcmd .. 'previous' .. end
     execute 'nnoremap <silent> ' .. map .. 'PNext :<C-U>exe "p' .. tcmd .. 'next' .. end
-    Map('n', '[<C-T>', '<Plug>(unimpaired-ptprevious)')
-    Map('n', ']<C-T>', '<Plug>(unimpaired-ptnext)')
+    execute Map('n', '[<C-T>', '<Plug>(unimpaired-ptprevious)')
+    execute Map('n', ']<C-T>', '<Plug>(unimpaired-ptnext)')
   endif
 enddef
 
@@ -171,8 +171,8 @@ nnoremap <silent> <Plug>(unimpaired-directory-next)     :<C-U><ScriptCmd>NextFil
 nnoremap <silent> <Plug>(unimpaired-directory-previous) :<C-U><ScriptCmd>PreviousFileEntry(v:count1)<CR>
 nnoremap <silent> <Plug>unimpairedDirectoryNext     :<C-U><ScriptCmd>NextFileEntry(v:count1)<CR>
 nnoremap <silent> <Plug>unimpairedDirectoryPrevious :<C-U><ScriptCmd>PreviousFileEntry(v:count1)<CR>
-Map('n', ']f', '<Plug>(unimpaired-directory-next)')
-Map('n', '[f', '<Plug>(unimpaired-directory-previous)')
+execute Map('n', ']f', '<Plug>(unimpaired-directory-next)')
+execute Map('n', '[f', '<Plug>(unimpaired-directory-previous)')
 
 # Section: Diff
 
@@ -183,12 +183,12 @@ vnoremap <silent> <Plug>(unimpaired-context-next)     :<C-U>execute 'normal! gv'
 onoremap <silent> <Plug>(unimpaired-context-previous) :<C-U><ScriptCmd>ContextMotion(1)<CR>
 onoremap <silent> <Plug>(unimpaired-context-next)     :<C-U><ScriptCmd>ContextMotion(0)<CR>
 
-Map('n', '[n', '<Plug>(unimpaired-context-previous)')
-Map('n', ']n', '<Plug>(unimpaired-context-next)')
-Map('x', '[n', '<Plug>(unimpaired-context-previous)')
-Map('x', ']n', '<Plug>(unimpaired-context-next)')
-Map('o', '[n', '<Plug>(unimpaired-context-previous)')
-Map('o', ']n', '<Plug>(unimpaired-context-next)')
+execute Map('n', '[n', '<Plug>(unimpaired-context-previous)')
+execute Map('n', ']n', '<Plug>(unimpaired-context-next)')
+execute Map('x', '[n', '<Plug>(unimpaired-context-previous)')
+execute Map('x', ']n', '<Plug>(unimpaired-context-next)')
+execute Map('o', '[n', '<Plug>(unimpaired-context-previous)')
+execute Map('o', ']n', '<Plug>(unimpaired-context-next)')
 
 nnoremap <silent> <Plug>unimpairedContextPrevious :<C-U><ScriptCmd>Context(1)<CR>
 nnoremap <silent> <Plug>unimpairedContextNext     :<C-U><ScriptCmd>Context(0)<CR>
@@ -256,8 +256,8 @@ nnoremap <silent> <Plug>(unimpaired-blank-down) :<C-U><ScriptCmd>BlankDown()<CR>
 nnoremap <silent> <Plug>unimpairedBlankUp   :<C-U><ScriptCmd>BlankUp()<CR>
 nnoremap <silent> <Plug>unimpairedBlankDown :<C-U><ScriptCmd>BlankDown()<CR>
 
-Map('n', '[<Space>', '<Plug>(unimpaired-blank-up)')
-Map('n', ']<Space>', '<Plug>(unimpaired-blank-down)')
+execute Map('n', '[<Space>', '<Plug>(unimpaired-blank-up)')
+execute Map('n', ']<Space>', '<Plug>(unimpaired-blank-down)')
 
 def ExecMove(cmd: string): void
   var old_fdm = &foldmethod
@@ -296,10 +296,10 @@ nnoremap <silent> <Plug>unimpairedMoveDown          :<C-U><ScriptCmd>Move('+',v:
 noremap  <silent> <Plug>unimpairedMoveSelectionUp   :<C-U><ScriptCmd>MoveSelectionUp(v:count1)<CR>
 noremap  <silent> <Plug>unimpairedMoveSelectionDown :<C-U><ScriptCmd>MoveSelectionDown(v:count1)<CR>
 
-Map('n', '[e', '<Plug>(unimpaired-move-up)')
-Map('n', ']e', '<Plug>(unimpaired-move-down)')
-Map('x', '[e', '<Plug>(unimpaired-move-selection-up)')
-Map('x', ']e', '<Plug>(unimpaired-move-selection-down)')
+execute Map('n', '[e', '<Plug>(unimpaired-move-up)')
+execute Map('n', ']e', '<Plug>(unimpaired-move-down)')
+execute Map('x', '[e', '<Plug>(unimpaired-move-selection-up)')
+execute Map('x', ']e', '<Plug>(unimpaired-move-selection-down)')
 
 # Section: Option toggling
 
@@ -364,18 +364,18 @@ nmap <script> <Plug>(unimpaired-enable)t  :<C-U>set colorcolumn=<C-R>=<SID>Color
 nmap <script> <Plug>(unimpaired-disable)t :<C-U>set colorcolumn=<C-R>=<SID>ColorColumn(1)<CR><CR>
 nmap <script> <Plug>(unimpaired-toggle)t  :<C-U>set colorcolumn=<C-R>=<SID>ColorColumn(!empty(&cc))<CR><CR>
 
-Map('n', 'yo', '<Plug>(unimpaired-toggle)')
-Map('n', '[o', '<Plug>(unimpaired-enable)')
-Map('n', ']o', '<Plug>(unimpaired-disable)')
-Map('n', 'yo<Esc>', '<Nop>')
-Map('n', '[o<Esc>', '<Nop>')
-Map('n', ']o<Esc>', '<Nop>')
-Map('n', '=s', '<Plug>(unimpaired-toggle)')
-Map('n', '<s', '<Plug>(unimpaired-enable)')
-Map('n', '>s', '<Plug>(unimpaired-disable)')
-Map('n', '=s<Esc>', '<Nop>')
-Map('n', '<s<Esc>', '<Nop>')
-Map('n', '>s<Esc>', '<Nop>')
+execute Map('n', 'yo', '<Plug>(unimpaired-toggle)')
+execute Map('n', '[o', '<Plug>(unimpaired-enable)')
+execute Map('n', ']o', '<Plug>(unimpaired-disable)')
+execute Map('n', 'yo<Esc>', '<Nop>')
+execute Map('n', '[o<Esc>', '<Nop>')
+execute Map('n', ']o<Esc>', '<Nop>')
+execute Map('n', '=s', '<Plug>(unimpaired-toggle)')
+execute Map('n', '<s', '<Plug>(unimpaired-enable)')
+execute Map('n', '>s', '<Plug>(unimpaired-disable)')
+execute Map('n', '=s<Esc>', '<Nop>')
+execute Map('n', '<s<Esc>', '<Nop>')
+execute Map('n', '>s<Esc>', '<Nop>')
 
 var paste = &paste
 var mouse = &mouse
@@ -438,17 +438,17 @@ nnoremap <silent> <Plug>(unimpaired-put-below-reformat)  :<C-U><ScriptCmd>Putlin
 nnoremap <silent> <Plug>unimpairedPutAbove :<ScriptCmd>Putline('[p', 'above')<CR>
 nnoremap <silent> <Plug>unimpairedPutBelow :<ScriptCmd>Putline(']p', 'below')<CR>
 
-Map('n', '[p', '<Plug>(unimpaired-put-above)')
-Map('n', ']p', '<Plug>(unimpaired-put-below)')
-Map('n', '[P', '<Plug>(unimpaired-put-above)')
-Map('n', ']P', '<Plug>(unimpaired-put-below)')
+execute Map('n', '[p', '<Plug>(unimpaired-put-above)')
+execute Map('n', ']p', '<Plug>(unimpaired-put-below)')
+execute Map('n', '[P', '<Plug>(unimpaired-put-above)')
+execute Map('n', ']P', '<Plug>(unimpaired-put-below)')
 
-Map('n', '>P', "<Plug>(unimpaired-put-above-rightward)")
-Map('n', '>p', "<Plug>(unimpaired-put-below-rightward)")
-Map('n', '<P', "<Plug>(unimpaired-put-above-leftward)")
-Map('n', '<p', "<Plug>(unimpaired-put-below-leftward)")
-Map('n', '=P', "<Plug>(unimpaired-put-above-reformat)")
-Map('n', '=p', "<Plug>(unimpaired-put-below-reformat)")
+execute Map('n', '>P', "<Plug>(unimpaired-put-above-rightward)")
+execute Map('n', '>p', "<Plug>(unimpaired-put-below-rightward)")
+execute Map('n', '<P', "<Plug>(unimpaired-put-above-leftward)")
+execute Map('n', '<p', "<Plug>(unimpaired-put-below-leftward)")
+execute Map('n', '=P', "<Plug>(unimpaired-put-above-reformat)")
+execute Map('n', '=p', "<Plug>(unimpaired-put-below-reformat)")
 
 # Section: Encoding and decoding
 
@@ -614,9 +614,9 @@ def UnimpairedMapTransform(algorithm: string, key: string): string
   execute 'nnoremap <expr> <Plug>(unimpaired-' ..  name .. ') <SID>TransformSetup("' .. algorithm .. '")'
   execute 'xnoremap <expr> <Plug>(unimpaired-' ..  name .. ') <SID>TransformSetup("' .. algorithm .. '")'
   execute 'nnoremap <expr> <Plug>(unimpaired-' ..  name .. '-line) <SID>TransformSetup("' .. algorithm .. '")."_"'
-  Map('n', key, '<Plug>(unimpaired-' .. name .. ')')
-  Map('x', key, '<Plug>(unimpaired-' .. name .. ')')
-  Map('n', key .. key[strlen(key) - 1], '<Plug>(unimpaired-' .. name .. '-line)')
+  execute Map('n', key, '<Plug>(unimpaired-' .. name .. ')')
+  execute Map('x', key, '<Plug>(unimpaired-' .. name .. ')')
+  execute Map('n', key .. key[strlen(key) - 1], '<Plug>(unimpaired-' .. name .. '-line)')
   return ''
 enddef
 
