@@ -268,35 +268,41 @@ def ExecMove(cmd: string): void
   endif
   normal! m`
   silent! execute cmd
-  norm! ``
+  normal! ``
   if old_fdm !=# 'manual'
     &foldmethod = old_fdm
   endif
 enddef
 
-def Move(cmd: string, count: number, map: string): void 
-  ExecMove('move' .. cmd .. count)
-  silent! repeat#set("\<Plug>(unimpaired-move-" .. map .. ")", count)
+def Move(cmd: string, count: number, map: string): void
+  ExecMove('move ' .. cmd .. count)
+  if exists('*repeat#set')
+    silent! repeat#set("\<Plug>(unimpaired-move-" .. map .. ")", count)
+  endif
 enddef
 
 def MoveSelectionUp(count: number): void
-  ExecMove("'<,'>move'<--" .. count)
-  silent! repeat#set("\<Plug>(unimpaired-move-selection-up)", count)
+  ExecMove("'<,'> move '<--" .. count)
+  if exists('*repeat#set')
+    silent! repeat#set("\<Plug>(unimpaired-move-selection-up)", count)
+  endif
 enddef
 
 def MoveSelectionDown(count: number): void
-  ExecMove("'<,'>move'>+" .. count)
-  silent! repeat#set("\<Plug>(unimpaired-move-selection-down)", count)
+  ExecMove("'<,'> move '>+" .. count)
+  if exists('*repeat@set')
+    silent! repeat#set("\<Plug>(unimpaired-move-selection-down)", count)
+  endif
 enddef
 
-nnoremap <silent> <Plug>(unimpaired-move-up)            :<C-U><ScriptCmd>Move('--',v:count1,'up')<CR>
-nnoremap <silent> <Plug>(unimpaired-move-down)          :<C-U><ScriptCmd>Move('+',v:count1,'down')<CR>
-noremap  <silent> <Plug>(unimpaired-move-selection-up)   :<C-U><ScriptCmd>MoveSelectionUp(v:count1)<CR>
-noremap  <silent> <Plug>(unimpaired-move-selection-down) :<C-U><ScriptCmd>MoveSelectionDown(v:count1)<CR>
-nnoremap <silent> <Plug>unimpairedMoveUp            :<C-U><ScriptCmd>Move('--',v:count1,'up')<CR>
-nnoremap <silent> <Plug>unimpairedMoveDown          :<C-U><ScriptCmd>Move('+',v:count1,'down')<CR>
-noremap  <silent> <Plug>unimpairedMoveSelectionUp   :<C-U><ScriptCmd>MoveSelectionUp(v:count1)<CR>
-noremap  <silent> <Plug>unimpairedMoveSelectionDown :<C-U><ScriptCmd>MoveSelectionDown(v:count1)<CR>
+nnoremap <Plug>(unimpaired-move-up)            :<C-U><ScriptCmd>Move('--', v:count1, 'up')<CR><CR>
+nnoremap <Plug>(unimpaired-move-down)          :<C-U><ScriptCmd>Move('+', v:count1, 'down')<CR><CR>
+noremap  <silent> <Plug>(unimpaired-move-selection-up)   :<C-U><ScriptCmd>MoveSelectionUp(v:count1)<CR><CR>
+noremap  <silent> <Plug>(unimpaired-move-selection-down) :<C-U><ScriptCmd>MoveSelectionDown(v:count1)<CR><CR>
+nnoremap <silent> <Plug>unimpairedMoveUp            :<C-U><ScriptCmd>Move('--', v:count1, 'up')<CR><CR>
+nnoremap <silent> <Plug>unimpairedMoveDown          :<C-U><ScriptCmd>Move('+', v:count1, 'down')<CR><CR>
+noremap  <silent> <Plug>unimpairedMoveSelectionUp   :<C-U><ScriptCmd>MoveSelectionUp(v:count1)<CR><CR>
+noremap  <silent> <Plug>unimpairedMoveSelectionDown :<C-U><ScriptCmd>MoveSelectionDown(v:count1)<CR><CR>
 
 execute Map('n', '[e', '<Plug>(unimpaired-move-up)')
 execute Map('n', ']e', '<Plug>(unimpaired-move-down)')
