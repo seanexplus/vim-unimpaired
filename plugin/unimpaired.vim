@@ -434,19 +434,21 @@ def Putline(how: string, map: string): void
     execute 'normal! "' .. v:register .. how
     setreg(v:register, body, type)
   endif
-  silent! repeat#set("\<Plug>(unimpaired-put-" .. map .. ")")
+  if exists('*repeat#set')
+    silent! repeat#set("\<Plug>(unimpaired-put-" .. map .. ")")
+  endif
 enddef
 
-nnoremap <silent> <Plug>(unimpaired-put-above) :<ScriptCmd>Putline('[p', 'above')<CR>
-nnoremap <silent> <Plug>(unimpaired-put-below) :<ScriptCmd>Putline(']p', 'below')<CR>
-nnoremap <silent> <Plug>(unimpaired-put-above-rightward) :<C-U><ScriptCmd>Putline(v:count1 . '[p', 'Above')<CR>>']
-nnoremap <silent> <Plug>(unimpaired-put-below-rightward) :<C-U><ScriptCmd>Putline(v:count1 . ']p', 'Below')<CR>>']
-nnoremap <silent> <Plug>(unimpaired-put-above-leftward)  :<C-U><ScriptCmd>Putline(v:count1 . '[p', 'Above')<CR><']
-nnoremap <silent> <Plug>(unimpaired-put-below-leftward)  :<C-U><ScriptCmd>Putline(v:count1 . ']p', 'Below')<CR><']
-nnoremap <silent> <Plug>(unimpaired-put-above-reformat)  :<C-U><ScriptCmd>Putline(v:count1 . '[p', 'Above')<CR>=']
-nnoremap <silent> <Plug>(unimpaired-put-below-reformat)  :<C-U><ScriptCmd>Putline(v:count1 . ']p', 'Below')<CR>=']
-nnoremap <silent> <Plug>unimpairedPutAbove :<ScriptCmd>Putline('[p', 'above')<CR>
-nnoremap <silent> <Plug>unimpairedPutBelow :<ScriptCmd>Putline(']p', 'below')<CR>
+nnoremap <silent> <Plug>(unimpaired-put-above) :<ScriptCmd>Putline('[p', 'above')<CR><CR>
+nnoremap <silent> <Plug>(unimpaired-put-below) :<ScriptCmd>Putline(']p', 'below')<CR><CR>
+nnoremap <silent> <Plug>(unimpaired-put-above-rightward) :<C-U><ScriptCmd>Putline(v:count1 .. '[p', 'Above')<CR><CR>>']
+nnoremap <silent> <Plug>(unimpaired-put-below-rightward) :<C-U><ScriptCmd>Putline(v:count1 .. ']p', 'Below')<CR><CR>>']
+nnoremap <silent> <Plug>(unimpaired-put-above-leftward)  :<C-U><ScriptCmd>Putline(v:count1 .. '[p', 'Above')<CR><CR><']
+nnoremap <silent> <Plug>(unimpaired-put-below-leftward)  :<C-U><ScriptCmd>Putline(v:count1 .. ']p', 'Below')<CR><CR><']
+nnoremap <silent> <Plug>(unimpaired-put-above-reformat)  :<C-U><ScriptCmd>Putline(v:count1 .. '[p', 'Above')<CR><CR>=']
+nnoremap <silent> <Plug>(unimpaired-put-below-reformat)  :<C-U><ScriptCmd>Putline(v:count1 .. ']p', 'Below')<CR><CR>=']
+nnoremap <silent> <Plug>unimpairedPutAbove :<ScriptCmd>Putline('[p', 'above')<CR><CR>
+nnoremap <silent> <Plug>unimpairedPutBelow :<ScriptCmd>Putline(']p', 'below')<CR><CR>
 
 execute Map('n', '[p', '<Plug>(unimpaired-put-above)')
 execute Map('n', ']p', '<Plug>(unimpaired-put-below)')
