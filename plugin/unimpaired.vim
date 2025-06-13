@@ -178,12 +178,12 @@ execute Map('n', '[f', '<Plug>(unimpaired-directory-previous)')
 
 # Section: Diff
 
-nnoremap <silent> <Plug>(unimpaired-context-previous) :<C-U><ScriptCmd>Context(1)<CR>
-nnoremap <silent> <Plug>(unimpaired-context-next)     :<C-U><ScriptCmd>Context(0)<CR>
-vnoremap <silent> <Plug>(unimpaired-context-previous) :<C-U>execute 'normal! gv'<Bar><ScriptCmd>Context(1)<CR>
-vnoremap <silent> <Plug>(unimpaired-context-next)     :<C-U>execute 'normal! gv'<Bar><ScriptCmd>Context(0)<CR>
-onoremap <silent> <Plug>(unimpaired-context-previous) :<C-U><ScriptCmd>ContextMotion(1)<CR>
-onoremap <silent> <Plug>(unimpaired-context-next)     :<C-U><ScriptCmd>ContextMotion(0)<CR>
+nnoremap <silent> <Plug>(unimpaired-context-previous) :<C-U><ScriptCmd>Context(true)<CR><CR>
+nnoremap <silent> <Plug>(unimpaired-context-next)     :<C-U><ScriptCmd>Context(false)<CR><CR>
+vnoremap <silent> <Plug>(unimpaired-context-previous) :<C-U>normal! gv<CR> <Bar><ScriptCmd>Context(true)<CR>
+vnoremap <silent> <Plug>(unimpaired-context-next)     :<C-U>normal! gv<CR> <Bar><ScriptCmd>Context(false)<CR>
+onoremap <silent> <Plug>(unimpaired-context-previous) :<C-U><ScriptCmd>ContextMotion(true)<CR><CR>
+onoremap <silent> <Plug>(unimpaired-context-next)     :<C-U><ScriptCmd>ContextMotion(false)<CR><CR>
 
 execute Map('n', '[n', '<Plug>(unimpaired-context-previous)')
 execute Map('n', ']n', '<Plug>(unimpaired-context-next)')
@@ -192,20 +192,21 @@ execute Map('x', ']n', '<Plug>(unimpaired-context-next)')
 execute Map('o', '[n', '<Plug>(unimpaired-context-previous)')
 execute Map('o', ']n', '<Plug>(unimpaired-context-next)')
 
-nnoremap <silent> <Plug>unimpairedContextPrevious :<C-U><ScriptCmd>Context(1)<CR>
-nnoremap <silent> <Plug>unimpairedContextNext     :<C-U><ScriptCmd>Context(0)<CR>
-xnoremap <silent> <Plug>unimpairedContextPrevious :<C-U>execute 'normal! gv'<Bar><ScriptCmd>Context(1)<CR>
-xnoremap <silent> <Plug>unimpairedContextNext     :<C-U>execute 'normal! gv'<Bar><ScriptCmd>Context(0)<CR>
-onoremap <silent> <Plug>unimpairedContextPrevious :<C-U><ScriptCmd>ContextMotion(1)<CR>
-onoremap <silent> <Plug>unimpairedContextNext     :<C-U><ScriptCmd>ContextMotion(0)<CR>
+nnoremap <silent> <Plug>unimpairedContextPrevious :<C-U><ScriptCmd>Context(true)<CR><CR>
+nnoremap <silent> <Plug>unimpairedContextNext     :<C-U><ScriptCmd>Context(false)<CR><CR>
+xnoremap <silent> <Plug>unimpairedContextPrevious :<C-U>normal! gv<CR> <Bar><ScriptCmd>Context(true)<CR>
+xnoremap <silent> <Plug>unimpairedContextNext     :<C-U>normal! gv<CR> <Bar><ScriptCmd>Context(false)<CR>
+onoremap <silent> <Plug>unimpairedContextPrevious :<C-U><ScriptCmd>ContextMotion(true)<CR><CR>
+onoremap <silent> <Plug>unimpairedContextNext     :<C-U><ScriptCmd>ContextMotion(false)<CR><CR>
 
 def Context(reverse: bool): number
-  search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', reverse ? 'bW' : 'W')
+  return search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', reverse ? 'bW' : 'W')
 enddef
 
 def ContextMotion(reverse: bool): void
   if reverse
-    -
+	cursor(line('.') - 1, 0)
+	normal! ^
   endif
   search('^@@ .* @@\|^diff \|^[<=>|]\{7}[<=>|]\@!', 'bWc')
   var end = 0
@@ -220,7 +221,8 @@ def ContextMotion(reverse: bool): void
       end = line('$')
     endif
   elseif getline('.') =~# '^=\{7\}'
-    +
+	cursor(line('.') + 1, 0)
+	normal! ^
     end = search('^>\{7}>\@!', 'Wnc')
   elseif getline('.') =~# '^[<=>|]\{7\}'
     end = search('^[<=>|]\{7}[<=>|]\@!', 'Wn') - 1
