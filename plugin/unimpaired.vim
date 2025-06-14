@@ -480,12 +480,12 @@ enddef
 
 def Url_encode(str: string): string
   # iconv trick to convert utf-8 bytes to 8bits indiviual char.
-  return substitute(iconv(str, 'latin1', 'utf-8'), '[^A-Za-z0-9_.~-]', '\="%".printf("%02X",char2nr(submatch(0)))', 'g')
+  return substitute(iconv(str, 'latin1', 'utf-8'), '[^A-Za-z0-9_.~-]', () => "%" .. printf("%02X", char2nr(submatch(0))), 'g')
 enddef
 
 def Url_decode(str: string): string
   var tstr = substitute(substitute(substitute(str, '%0[Aa]\n$', '%0A', ''), '%0[Aa]', '\n', 'g'), '+', ' ', 'g')
-  return iconv(substitute(tstr, '%\(\x\x\)', '\=nr2char("0x".submatch(1))','g'), 'utf-8', 'latin1')
+  return iconv(substitute(tstr, '%\(\x\x\)', () => nr2char(str2nr("0x" .. submatch(1), 16)), 'g'), 'utf-8', 'latin1')
 enddef
 
 # HTML entities {{{2
@@ -638,8 +638,8 @@ UnimpairedMapTransform('string_encode', '[y')
 UnimpairedMapTransform('string_decode', ']y')
 UnimpairedMapTransform('string_encode', '[C')
 UnimpairedMapTransform('string_decode', ']C')
-UnimpairedMapTransform('url_encode', '[u')
-UnimpairedMapTransform('url_decode', ']u')
+UnimpairedMapTransform('Url_encode', '[u')
+UnimpairedMapTransform('Url_decode', ']u')
 UnimpairedMapTransform('Xml_encode', '[x')
 UnimpairedMapTransform('Xml_decode', ']x')
 
