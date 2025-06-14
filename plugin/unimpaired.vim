@@ -559,9 +559,9 @@ g:unimpaired_html_entities = {
 
 def Xml_encode(str: string): string
   var tstr = str
-  tstr = substitute(tstr,'&', '\&amp;', 'g')
-  tstr = substitute(tstr,'<', '\&lt;', 'g')
-  tstr = substitute(tstr,'>', '\&gt;', 'g')
+  tstr = substitute(tstr, '&', '\&amp;', 'g')
+  tstr = substitute(tstr, '<', '\&lt;', 'g')
+  tstr = substitute(tstr, '>', '\&gt;', 'g')
   tstr = substitute(tstr, '"', '\&quot;', 'g')
   tstr = substitute(tstr, "'", '\&apos;', 'g')
   return tstr
@@ -569,19 +569,19 @@ enddef
 
 def Xml_entity_decode(str: string): string
   var tstr = substitute(str, '\c&#\%(0*38\|x0*26\);', '&amp;', 'g')
-  tstr = substitute(tstr, '\c&#\(\d\+\);', '\=nr2char(submatch(1))', 'g')
-  tstr = substitute(tstr, '\c&#\(x\x\+\);', '\=nr2char("0".submatch(1))', 'g')
+  tstr = substitute(tstr, '\c&#\(\d\+\);', () => nr2char(str2nr(submatch(1))), 'g')
+  tstr = substitute(tstr, '\c&#\(x\x\+\);', () => nr2char(str2nr("0" .. submatch(1))), 'g')
   tstr = substitute(tstr, '\c&apos;', "'", 'g')
   tstr = substitute(tstr, '\c&quot;', '"', 'g')
   tstr = substitute(tstr, '\c&gt;', '>', 'g')
   tstr = substitute(tstr, '\c&lt;', '<', 'g')
-  tstr = substitute(tstr, '\C&\(\%(amp;\)\@!\w*\);', '\=nr2char(get(g:unimpaired_html_entities,submatch(1),63))', 'g')
+  tstr = substitute(tstr, '\C&\(\%(amp;\)\@!\w*\);', () => nr2char(str2nr(get(g:unimpaired_html_entities, submatch(1), 63))), 'g')
   return substitute(tstr, '\c&amp;', '\&', 'g')
 enddef
 
 def Xml_decode(str: string): string
   var tstr = substitute(str, '<\%([[:alnum:]-]\+=\%("[^"]*"\|''[^'']*''\)\|.\)\{-\}>', '', 'g')
-  return xml_entity_decode(tstr)
+  return Xml_entity_decode(tstr)
 enddef
 
 def Transform(algorithm: string, type: string): void
@@ -591,16 +591,16 @@ def Transform(algorithm: string, type: string): void
   var reg_save = exists('*getreginfo') ? getreginfo('@') : getreg('@')
   if type ==# 'line'
     silent execute "normal! '[V']y"
-    @@ = substitute(@@, "\n$", '', '')
+    setreg('"', substitute(getreg('"'), "\n$", '', ''))
   elseif type ==# 'block'
     silent execute "normal! `[\<C-V>`]y"
   else
     silent execute "normal! `[v`]y"
   endif
   if algorithm =~# '^\u\|#'
-    @@ = {algorithm}(@@)
+    setreg('"', function(algorithm)(getreg('"')))
   else
-    @@ = {algorithm}(@@)
+    setreg('"', function(algorithm)(getreg('"')))
   endif
   norm! gvp
   setreg('@', reg_save)
@@ -608,13 +608,15 @@ def Transform(algorithm: string, type: string): void
   &clipboard = cb_save
 enddef
 
-def TransformOpfunc(type: string): any
-  return Transform(encode_algorithm, type)
+var encode_algorithm = ''
+
+def TransformOpfunc(type: string): void
+  Transform(encode_algorithm, type)
 enddef
 
 def TransformSetup(algorithm: string): string
   encode_algorithm = algorithm
-  &opfunc = matchstr(expand('<sfile>'), '<SNR>\d\+_') .. 'TransformOpfunc'
+  &opfunc = matchstr(expand('<script>'), '<SNR>\d\+_') .. 'TransformOpfunc'
   return 'g@'
 enddef
 
@@ -638,7 +640,7 @@ UnimpairedMapTransform('string_encode', '[C')
 UnimpairedMapTransform('string_decode', ']C')
 UnimpairedMapTransform('url_encode', '[u')
 UnimpairedMapTransform('url_decode', ']u')
-UnimpairedMapTransform('xml_encode', '[x')
-UnimpairedMapTransform('xml_decode', ']x')
+UnimpairedMapTransform('Xml_encode', '[x')
+UnimpairedMapTransform('Xml_decode', ']x')
 
 # vim:set sw=2 sts=2:
