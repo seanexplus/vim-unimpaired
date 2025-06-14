@@ -466,16 +466,16 @@ execute Map('n', '=p', "<Plug>(unimpaired-put-below-reformat)")
 
 def String_encode(str: string): string
   var map = {"\n": 'n', "\r": 'r', "\t": 't', "\b": 'b', "\f": '\f', '"': '"', '\': '\'}
-  return substitute(str,"[\001-\033\\\\\"]",'\="\\".get(map,submatch(0),printf("%03o",char2nr(submatch(0))))','g')
+  return substitute(str, "[\001-\033\\\\\"]", () => "\\" .. get(map, submatch(0), printf("%03o", char2nr( submatch(0)))), 'g')
 enddef
 
 def String_decode(str: string): string
   var map = {'n': "\n", 'r': "\r", 't': "\t", 'b': "\b", 'f': "\f", 'e': "\e", 'a': "\001", 'v': "\013", "\n": ''}
   var tstr = str
   if tstr =~# '^\s*".\{-\}\\\@<!\%(\\\\\)*"\s*\n\=$'
-    tstr = substitute(substitute(tstr, '^\s*\zs"','',''),'"\ze\s*\n\=$', '', '')
+    tstr = substitute(substitute(tstr, '^\s*\zs"', '', ''), '"\ze\s*\n\=$', '', '')
   endif
-  return substitute(tstr, '\\\(\o\{1,3\}\|x\x\{1,2\}\|u\x\{1,4\}\|.\)', '\=get(map,submatch(1),submatch(1) =~? "^[0-9xu]" ? nr2char("0".substitute(submatch(1),"^[Uu]","x","")) : submatch(1))', 'g')
+  return substitute(tstr, '\\\(\o\{1,3\}\|x\x\{1,2\}\|u\x\{1,4\}\|.\)', () => get(map, submatch(1), submatch(1) =~? "^[0-9xu]" ? nr2char(str2nr("0" .. substitute(submatch(1), "^[Uu]", "x", ""))) : submatch(1)), 'g')
 enddef
 
 def Url_encode(str: string): string
@@ -634,10 +634,10 @@ def UnimpairedMapTransform(algorithm: string, key: string): string
   return ''
 enddef
 
-UnimpairedMapTransform('string_encode', '[y')
-UnimpairedMapTransform('string_decode', ']y')
-UnimpairedMapTransform('string_encode', '[C')
-UnimpairedMapTransform('string_decode', ']C')
+UnimpairedMapTransform('String_encode', '[y')
+UnimpairedMapTransform('String_decode', ']y')
+UnimpairedMapTransform('String_encode', '[C')
+UnimpairedMapTransform('String_decode', ']C')
 UnimpairedMapTransform('Url_encode', '[u')
 UnimpairedMapTransform('Url_decode', ']u')
 UnimpairedMapTransform('Xml_encode', '[x')
