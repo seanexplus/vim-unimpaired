@@ -426,17 +426,24 @@ nmap <script><silent> <Plug>(unimpaired-toggle)p  :<C-U><ScriptCmd>SetupPaste()<
 # Section: Put
 
 def Putline(how: string, map: string): void
-  var [body, type] = [getreg(v:register), getregtype(v:register)]
+  var reg = v:register
+  var [body, type] = [getreg(reg), getregtype(reg)]
+  if reg =~ '[:%.]' # detect read only register
+	var [body_save, type_save] = [getreg('"'), getregtype('"')]
+	reg = '"'
+	setreg('"', body, type)
+  endif
   if type ==# 'V'
     execute 'normal! "' .. v:register .. how
   else
-    setreg(v:register, body, 'l')
+    setreg(reg, body, 'l')
     execute 'normal! "' .. v:register .. how
-    setreg(v:register, body, type)
+    setreg(reg, body, type)
   endif
-  if exists('*repeat#set')
-    silent! repeat#set("\<Plug>(unimpaired-put-" .. map .. ")")
+  if exists('body_save')
+	setreg('"', body_save, type_save)
   endif
+  silent! repeat#set("\<Plug>(unimpaired-put-" .. map .. ")")
 enddef
 
 nnoremap <silent> <Plug>(unimpaired-put-above) :<ScriptCmd>Putline('[p', 'above')<CR><CR>
